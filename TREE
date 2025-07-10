@@ -1,0 +1,29 @@
+lee-scaffold/
+├── install.sh                    # 安装脚本
+├── setup.py                     # 包安装配置
+├── README.md                    # 项目文档
+├── requirements.txt             # 依赖文件
+├── Makefile                     # 开发命令
+├── .gitignore                   # Git忽略文件
+├── CHANGELOG.md                 # 更新日志
+├── tests/                       # 测试文件
+│   ├── __init__.py
+│   ├── test_cocoapods.py
+│   └── test_cli.py
+└── lee_scaffold/               # 主包
+    ├── __init__.py             # 包初始化
+    ├── cli.py                  # 主命令行接口
+    ├── config.py               # 配置管理
+    ├── utils/                  # 通用工具
+    │   ├── __init__.py
+    │   ├── file_ops.py         # 文件操作工具
+    │   ├── git_ops.py          # Git操作工具
+    │   ├── text_ops.py         # 文本处理工具
+    │   └── logger.py           # 日志工具
+    └── commands/               # 各功能命令
+        ├── __init__.py
+        ├── cocoapods.py        # CocoaPods相关（你的main.py内容）
+        ├── git_tools.py        # Git工具集
+        ├── file_tools.py       # 文件处理工具
+        ├── code_gen.py         # 代码生成工具
+        └── project_init.py     # 项目初始化工具
