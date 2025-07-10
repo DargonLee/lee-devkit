@@ -1,0 +1,27 @@
+{
+  "name": "NBTemplateModule",
+  "version": "0.1.0",
+  "summary": "A short description of NBTemplateModule.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://git.ninebot.com/",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "ninebot": "www.ninebot.com"
+  },
+  "source": {
+    "git": "https://git.ninebot.com/iOS/NBTemplateModule.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "13.0"
+  },
+  "source_files": "NBTemplateModule/Sources/**/*",
+  "resource_bundles": {
+    "NBTemplateModule": [
+      "NBTemplateModule/Resources/China/**/*.*"
+    ]
+  }
+}

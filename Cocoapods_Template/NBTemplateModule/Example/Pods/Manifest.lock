@@ -1,0 +1,16 @@
+PODS:
+  - NBTemplateModule (0.1.0)
+
+DEPENDENCIES:
+  - NBTemplateModule (from `../`)
+
+EXTERNAL SOURCES:
+  NBTemplateModule:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  NBTemplateModule: 85a2dfe93a8572947784f7a08c29f7ff22a4a6e9
+
+PODFILE CHECKSUM: 1850aaed907e0295d81201e2a4b0e5b2339ee42d
+
+COCOAPODS: 1.16.2
