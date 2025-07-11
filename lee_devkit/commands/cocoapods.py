@@ -16,16 +16,16 @@ __version__ = "1.0.0"
 class CocoaPodsScaffold:
     def __init__(self):
         self.template_name = "NBTemplateModule"
-        self.config_dir = Path.home() / ".cocoapods-scaffold"
+        self.config_dir = Path.home() / ".ninebot_cli"
         self.config_file = self.config_dir / "config.json"
-        self.templates_dir = self.config_dir / "templates"
+        self.templates_dir = self.config_dir / "template"
         
         # 默认配置
         self.default_config = {
-            "template_repo": "https://github.com/your-company/cocoapods-template.git",
-            "author": "Your Name",
-            "email": "your.email@company.com",
-            "organization": "Your Company",
+            "template_repo": "git@git.ninebot.com:iOS/podmaker.git",
+            "author": "hailong.li",
+            "email": "hailong.li@ninebot.com",
+            "organization": "ninebot",
             "prefix": "YC"
         }
         
@@ -69,36 +69,80 @@ class CocoaPodsScaffold:
             return False
     
     def clone_or_update_template(self, force_update: bool = False) -> bool:
-        """克隆或更新模板"""
+        """克隆或更新模板，只保留 template 文件夹内容"""
+        import tempfile
         config = self.load_config()
         repo_url = config.get("template_repo")
         
         if not repo_url:
-            print("❌ 模板仓库 URL 未配置")
-            return False
+            repo_url = "git@git.ninebot.com:iOS/podmaker.git"
         
-        template_path = self.templates_dir / "template"
+        template_path = self.templates_dir
+        
+        # 检查是否在项目根目录，如果是则使用本地模板
+        local_template_path = Path.cwd() / "template"
+        if local_template_path.exists() and (local_template_path / "NBTemplateModule").exists():
+            print("🔧 检测到本地模板，使用项目中的模板...")
+            # 清理旧缓存
+            if template_path.exists():
+                shutil.rmtree(template_path)
+            template_path.mkdir(parents=True, exist_ok=True)
+            
+            # 复制本地模板
+            success = self.run_command([
+                "cp", "-r", f"{local_template_path}/.", str(template_path)
+            ])
+            if success:
+                print(f"✅ 已使用本地模板: {local_template_path}")
+                return True
+            else:
+                print("⚠️  使用本地模板失败，回退到远程模板...")
         
         if template_path.exists() and not force_update:
             print("✅ 模板已存在，使用现有模板")
             return True
         
+        # 清理旧模板
         if template_path.exists():
             shutil.rmtree(template_path)
         
-        print(f"📥 正在克隆模板: {repo_url}")
-        
-        # 克隆模板
-        success = self.run_command([
-            "git", "clone", repo_url, str(template_path)
-        ])
-        
-        if success:
-            print("✅ 模板克隆成功")
-            return True
-        else:
-            print("❌ 模板克隆失败")
-            return False
+        # 临时目录用于克隆
+        with tempfile.TemporaryDirectory() as tmpdir:
+            print(f"📥 正在克隆模板仓库到临时目录: {repo_url}")
+            success = self.run_command([
+                "git", "clone", repo_url, tmpdir
+            ])
+            if not success:
+                print("❌ 模板克隆失败")
+                return False
+            
+            # 切换到 develop 分支
+            print("🔄 切换到 develop 分支...")
+            success = self.run_command([
+                "git", "checkout", "develop"
+            ], cwd=tmpdir)
+            if not success:
+                print("⚠️  切换到 develop 分支失败，使用默认分支")
+            
+            # 复制整个 template 目录内容
+            src_template = Path(tmpdir) / "template"
+            if not src_template.exists():
+                print(f"❌ 仓库中未找到 template 文件夹: {src_template}")
+                return False
+            
+            # 确保目标目录存在
+            template_path.mkdir(parents=True, exist_ok=True)
+            
+            # 使用 cp 命令复制所有内容
+            success = self.run_command([
+                "cp", "-r", f"{src_template}/.", str(template_path)
+            ])
+            if not success:
+                print("❌ 复制模板内容失败")
+                return False
+            
+            print(f"✅ 已复制 template 内容到: {template_path}")
+        return True
     
     def find_template_files(self, template_dir: Path) -> List[Path]:
         """查找需要处理的文件"""
@@ -206,49 +250,86 @@ class CocoaPodsScaffold:
     def create_project(self, module_name: str, include_example: bool = True,
                       output_dir: str = ".", force_update: bool = False) -> bool:
         """创建新项目"""
+        import tempfile
+        
         # 检查模板
         if not self.clone_or_update_template(force_update):
             return False
         
-        template_dir = self.templates_dir / "template" / self.template_name
+        template_dir = self.templates_dir / self.template_name
         if not template_dir.exists():
             print(f"❌ 模板目录不存在: {template_dir}")
             return False
         
-        # 检查目标目录
-        output_path = Path(output_dir) / module_name
-        if output_path.exists():
-            print(f"❌ 目标目录已存在: {output_path}")
+        # 确保输出目录存在
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+        
+        # 检查目标目录（module_name 文件夹）
+        project_path = output_path / module_name
+        if project_path.exists():
+            print(f"❌ 目标目录已存在: {project_path}")
             return False
         
         print(f"🚀 正在创建项目: {module_name}")
+        print(f"📁 输出路径: {project_path}")
         
-        # 复制模板
-        shutil.copytree(template_dir, output_path)
+        # 使用临时目录处理模板
+        with tempfile.TemporaryDirectory() as tmpdir:
+            temp_project_path = Path(tmpdir) / module_name
+            temp_project_path.mkdir(parents=True)
+            
+            # 1. 复制整个模板目录的内容到临时目录
+            # 首先复制 NBTemplateModule 目录的内容到项目根目录
+            template_module_dir = self.templates_dir / self.template_name
+            if template_module_dir.exists():
+                success = self.run_command([
+                    "cp", "-r", f"{template_module_dir}/.", str(temp_project_path)
+                ])
+                if not success:
+                    print("❌ 复制模板模块内容失败")
+                    return False
+            
+            # 然后复制根级别的文件（如 .podspec, LICENSE 等）
+            for item in self.templates_dir.iterdir():
+                if item.is_file():
+                    success = self.run_command([
+                        "cp", str(item), str(temp_project_path / item.name)
+                    ])
+                    if not success:
+                        print(f"⚠️  复制文件 {item.name} 失败")
+            
+            # 2. 重命名文件和目录
+            self.rename_files_and_dirs(temp_project_path, self.template_name, module_name)
+            
+            # 3. 替换文件内容
+            files_to_process = self.find_template_files(temp_project_path)
+            for file_path in files_to_process:
+                self.replace_file_content(file_path, self.template_name, module_name)
+            
+            # 4. 处理 Example 目录
+            self.remove_example_if_needed(temp_project_path, include_example)
+            
+            # 5. 更新 podspec
+            podspec_path = temp_project_path / f"{module_name}.podspec"
+            if podspec_path.exists():
+                self.update_podspec_metadata(podspec_path, module_name)
+            
+            # 6. 清理临时文件
+            for pattern in ["*.orig", "*~"]:
+                for file in temp_project_path.rglob(pattern):
+                    file.unlink()
+            
+            # 7. 最后复制处理好的项目到目标目录
+            success = self.run_command([
+                "cp", "-r", str(temp_project_path), str(project_path.parent)
+            ])
+            if not success:
+                print("❌ 复制最终项目失败")
+                return False
         
-        # 重命名文件和目录
-        self.rename_files_and_dirs(output_path, self.template_name, module_name)
-        
-        # 替换文件内容
-        files_to_process = self.find_template_files(output_path)
-        for file_path in files_to_process:
-            self.replace_file_content(file_path, self.template_name, module_name)
-        
-        # 处理 Example 目录
-        self.remove_example_if_needed(output_path, include_example)
-        
-        # 更新 podspec
-        podspec_path = output_path / f"{module_name}.podspec"
-        if podspec_path.exists():
-            self.update_podspec_metadata(podspec_path, module_name)
-        
-        # 清理临时文件
-        for pattern in ["*.orig", "*~"]:
-            for file in output_path.rglob(pattern):
-                file.unlink()
-        
-        print(f"✅ 项目创建成功: {output_path}")
-        self.print_next_steps(module_name, output_path, include_example)
+        print(f"✅ 项目创建成功: {project_path}")
+        self.print_next_steps(module_name, project_path, include_example)
         
         return True
     
@@ -265,8 +346,6 @@ class CocoaPodsScaffold:
         else:
             print("3. 开始开发你的库代码")
         
-        print("5. 初始化 Git 仓库: git init")
-        print("6. 提交代码: git add . && git commit -m 'Initial commit'")
     
     def configure(self, **kwargs):
         """配置工具"""
@@ -300,3 +379,28 @@ class CocoaPodsScaffold:
                     print(f"  - {item.name}")
         else:
             print("❌ 没有找到模板")
+
+def register_arguments(parser):
+    parser.add_argument('action', choices=['create'], help='操作类型')
+    parser.add_argument('module_name', help='新库名称')
+    parser.add_argument('--include-example', action='store_true', help='包含 Example 工程')
+    parser.add_argument('--output', default='.', help='输出目录（默认为当前目录）')
+    parser.add_argument('--force-update', action='store_true', help='强制更新模板')
+
+def execute(args, config):
+    if args.action == 'create':
+        scaffold = CocoaPodsScaffold()
+        include_example = args.include_example  # 默认不包含，只有使用 --include-example 时才包含
+        
+        # 确保输出目录是绝对路径，默认为当前工作目录
+        output_dir = Path(args.output).resolve()
+        
+        return scaffold.create_project(
+            module_name=args.module_name,
+            include_example=include_example,
+            output_dir=str(output_dir),
+            force_update=args.force_update
+        )
+    else:
+        print(f'❌ 未知操作: {args.action}')
+        return False

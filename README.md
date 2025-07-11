@@ -1,4 +1,4 @@
-# CocoaPods 脚手架工具
+# 日常开发脚手架工具
 
 基于模板快速创建 CocoaPods 库的命令行工具。
 
@@ -14,24 +14,29 @@
 
 ## 安装
 
-### 方式一：使用 pip 安装
+### 先安装 pipx
+```bash
+brew install pipx
+```
+
+### 方式一：使用 pipx 安装
 
 ```bash
-pip3 install cocoapods-scaffold
+pipx install git@github.com:DargonLee/lee-devkit.git
 ```
 
 ### 方式二：从源码安装
 
 ```bash
-git clone https://github.com/your-company/cocoapods-scaffold.git
-cd cocoapods-scaffold
+git clone https://github.com/DargonLee/lee-devkit.git
+cd lee-devkit
 pip3 install -e .
 ```
 
 ### 方式三：使用安装脚本
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/your-company/cocoapods-scaffold/main/install.sh | bash
+curl -fsSL https://github.com/DargonLee/lee-devkit/blob/main/install.sh | bash
 ```
 
 ## 使用方法
@@ -40,44 +45,44 @@ curl -fsSL https://raw.githubusercontent.com/your-company/cocoapods-scaffold/mai
 
 ```bash
 # 创建包含 Example 的项目
-podscaffold create MyLibrary
+lee-devkit create MyLibrary
 
 # 创建不包含 Example 的项目
-podscaffold create MyLibrary --no-example
+lee-devkit create MyLibrary --no-example
 
 # 指定输出目录
-podscaffold create MyLibrary --output ~/Projects
+lee-devkit create MyLibrary --output ~/Projects
 ```
 
 ### 配置工具
 
 ```bash
 # 配置作者信息
-podscaffold config --author "Your Name" --email "your@email.com"
+lee-devkit config --author "Your Name" --email "your@email.com"
 
 # 配置模板仓库
-podscaffold config --template-repo "https://github.com/your-company/template.git"
+lee-devkit config --template-repo "https://github.com/your-company/template.git"
 
 # 显示当前配置
-podscaffold config --show
+lee-devkit config --show
 ```
 
 ### 其他命令
 
 ```bash
 # 更新模板
-podscaffold update
+lee-devkit update
 
 # 列出可用模板
-podscaffold list
+lee-devkit list
 
 # 查看帮助
-podscaffold --help
+lee-devkit --help
 ```
 
 ## 配置说明
 
-工具会在 `~/.cocoapods-scaffold/config.json` 中保存配置信息：
+工具会在 `~/.lee_devkit/config.json` 中保存配置信息：
 
 ```json
 {
@@ -99,25 +104,22 @@ podscaffold --help
 
 ## 开发
 
-### 本地开发
+### 本地开发环境
 
 ```bash
-git clone https://github.com/your-company/cocoapods-scaffold.git
-cd cocoapods-scaffold
-pip3 install -e .
-```
+git clone git@git.ninebot.com:iOS/podmaker.git
+cd podmaker
+git checkout develop  # 切换到 develop 分支
 
-### 运行测试
+# 创建虚拟环境
+python3 -m venv venv
+source venv/bin/activate
 
-```bash
-python -m pytest tests/
-```
+# 安装依赖
+pip install -r requirements.txt
 
-### 发布新版本
-
-```bash
-python setup.py sdist bdist_wheel
-twine upload dist/*
+# 以开发模式安装
+pip install -e .
 ```
 
 ## 许可证
