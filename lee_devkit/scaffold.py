@@ -6,7 +6,7 @@ Lee Scaffold - 个人开发工具集
 import argparse
 import sys
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Optional, List
 
 from . import __version__
 from .config import Config
@@ -63,7 +63,7 @@ class LeeScaffold:
     def create_parser(self) -> argparse.ArgumentParser:
         """创建主命令解析器"""
         parser = argparse.ArgumentParser(
-            prog='lee-scaffold',
+            prog='lee-devkit',
             description='Lee 个人开发工具集 - 提高开发效率的命令行工具',
             formatter_class=argparse.RawDescriptionHelpFormatter,
             epilog=self._get_examples()
@@ -72,7 +72,7 @@ class LeeScaffold:
         parser.add_argument(
             '--version', 
             action='version', 
-            version=f'lee-scaffold {__version__}'
+            version=f'lee-devkit {__version__}'
         )
         
         parser.add_argument(
@@ -97,7 +97,7 @@ class LeeScaffold:
             dest='command',
             title='可用命令',
             description='选择要执行的命令',
-            help='使用 lee-scaffold <command> --help 查看详细帮助'
+            help='使用 lee-devkit <command> --help 查看详细帮助'
         )
         
         # 注册所有子命令
@@ -161,28 +161,28 @@ class LeeScaffold:
         return """
 使用示例:
   # CocoaPods 相关
-  lee-scaffold cocoapods create MyLibrary
-  lee-scaffold pod create MyLibrary --no-example
+  lee-devkit cocoapods create MyLibrary
+  lee-devkit pod create MyLibrary --no-example
   
   # Git 工具
-  lee-scaffold git clone-batch repos.txt
-  lee-scaffold git status-all ~/Projects
+  lee-devkit git clone-batch repos.txt
+  lee-devkit git status-all ~/Projects
   
   # 文件工具
-  lee-scaffold file rename-batch --pattern "*.jpg"
-  lee-scaffold file convert-encoding --from gbk --to utf-8
+  lee-devkit file rename-batch --pattern "*.jpg"
+  lee-devkit file convert-encoding --from gbk --to utf-8
   
   # 代码生成
-  lee-scaffold codegen swift-model --json data.json
-  lee-scaffold gen api-client --swagger api.yaml
+  lee-devkit codegen swift-model --json data.json
+  lee-devkit gen api-client --swagger api.yaml
   
   # 项目初始化
-  lee-scaffold init react-app MyApp
-  lee-scaffold new fastapi-project MyAPI
+  lee-devkit init react-app MyApp
+  lee-devkit new fastapi-project MyAPI
   
   # 配置管理
-  lee-scaffold config --show
-  lee-scaffold config --author "Lee" --email "lee@example.com"
+  lee-devkit config --show
+  lee-devkit config --author "Lee" --email "lee@example.com"
         """
     
     def handle_config_command(self, args: argparse.Namespace):
@@ -211,8 +211,10 @@ class LeeScaffold:
             else:
                 print("❌ 没有指定要更新的配置项")
     
-    def run(self, args: list = []):
+    def run(self, args: Optional[List[str]] = None):
         """运行命令行工具"""
+        if args is None:
+            args = sys.argv[1:]
         parser = self.create_parser()
         parsed_args = parser.parse_args(args)
         
@@ -245,7 +247,7 @@ class LeeScaffold:
                 break
         
         if cmd_name not in self.commands:
-            print(f"❌ 未知命令: {cmd_name}")
+            print(f"❌ 未知命令: {parsed_args.command}")
             parser.print_help()
             sys.exit(1)
         
@@ -253,6 +255,8 @@ class LeeScaffold:
         try:
             cmd_module = self.commands[cmd_name]['module']
             if hasattr(cmd_module, 'execute'):
+                # 更新 parsed_args.command 为实际命令名，以便模块内部使用
+                parsed_args.command = cmd_name
                 success = cmd_module.execute(parsed_args, self.config)
                 if not success:
                     sys.exit(1)

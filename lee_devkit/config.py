@@ -15,11 +15,11 @@ class Config:
     """配置管理类"""
     
     def __init__(self):
-        self.config_dir = Path.home() / '.lee-scaffold'
+        self.config_dir = Path.home() / '.lee_devkit'
         self.config_file = self.config_dir / 'config.json'
         self.default_config = {
-            'author': 'Lee',
-            'email': 'lee@example.com',
+            'author': 'Dargon',
+            'email': '2461414445@qq.com',
             'organization': 'Personal',
             'editor': 'code',  # VS Code
             'git': {
@@ -28,7 +28,7 @@ class Config:
                 'commit_template': 'feat: {message}'
             },
             'cocoapods': {
-                'template_repo': 'https://github.com/your-org/cocoapods-template.git',
+                'template_repo': 'git@github.com:DargonLee/lee-devkit.git',
                 'default_platform': 'iOS',
                 'swift_version': '5.0'
             },

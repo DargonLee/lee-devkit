@@ -16,16 +16,16 @@ __version__ = "1.0.0"
 class CocoaPodsScaffold:
     def __init__(self):
         self.template_name = "NBTemplateModule"
-        self.config_dir = Path.home() / ".ninebot_cli"
+        self.config_dir = Path.home() / ".lee_devkit"
         self.config_file = self.config_dir / "config.json"
         self.templates_dir = self.config_dir / "template"
         
         # 默认配置
         self.default_config = {
-            "template_repo": "git@git.ninebot.com:iOS/podmaker.git",
-            "author": "hailong.li",
-            "email": "hailong.li@ninebot.com",
-            "organization": "ninebot",
+            "template_repo": "git@github.com:DargonLee/lee-devkit.git",
+            "author": "Dargon",
+            "email": "2461414445@qq.com",
+            "organization": "none",
             "prefix": "YC"
         }
         
@@ -75,7 +75,8 @@ class CocoaPodsScaffold:
         repo_url = config.get("template_repo")
         
         if not repo_url:
-            repo_url = "git@git.ninebot.com:iOS/podmaker.git"
+            print(f"❌ 未配置模板仓库 URL，请先运行 `configure` 命令设置")    
+            return False
         
         template_path = self.templates_dir
         
@@ -115,14 +116,6 @@ class CocoaPodsScaffold:
             if not success:
                 print("❌ 模板克隆失败")
                 return False
-            
-            # 切换到 develop 分支
-            print("🔄 切换到 develop 分支...")
-            success = self.run_command([
-                "git", "checkout", "develop"
-            ], cwd=tmpdir)
-            if not success:
-                print("⚠️  切换到 develop 分支失败，使用默认分支")
             
             # 复制整个 template 目录内容
             src_template = Path(tmpdir) / "template"
