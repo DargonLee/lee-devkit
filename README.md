@@ -3,7 +3,7 @@
 基于模板快速创建和管理 CocoaPods 库的命令行工具。
 
 <p align="center">
-  <img src="https://img.shields.io/badge/平台-macOS%20%7C%20Linux%20%7C%20Windows-blue" alt="平台">
+  <img src="https://img.shields.io/badge/平台-macOS-blue" alt="平台">
   <img src="https://img.shields.io/badge/python-3.7%2B-blue" alt="Python">
   <img src="https://img.shields.io/badge/许可证-MIT-green" alt="许可证">
 </p>
@@ -17,7 +17,7 @@
 - 🔧 **支持自定义输出目录** - 指定生成库的位置
 - 📋 **自动更新 podspec 元数据** - 自动填充必要信息
 - 📤 **CocoaPods 仓库管理** - 推送 podspec 到 spec 仓库
-- 🌐 **跨平台支持** - 支持 macOS、Linux 和 Windows
+- 🌐 **macOS 平台支持** - 专为 macOS 平台优化设计
 
 ## 📋 目录
 
