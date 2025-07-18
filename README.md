@@ -78,6 +78,29 @@ lee-devkit list
 
 # 查看帮助
 lee-devkit --help
+
+# 发布 CocoaPods 库
+lee-devkit pod-push                      # 自动检测当前目录下的 podspec 文件并发布
+lee-devkit pod-push MyLibrary.podspec    # 发布指定的 podspec 文件
+lee-devkit pod-push --repo MySpecs       # 发布到指定的 spec 仓库
+```
+
+### CocoaPods 库发布
+
+```bash
+# 管理 spec 仓库
+lee-devkit pod-push --list-repos                           # 列出所有配置的 spec 仓库
+lee-devkit pod-push --add-repo MySpecs git@example.com:MySpecs.git  # 添加 spec 仓库
+lee-devkit pod-push --remove-repo MySpecs                  # 移除 spec 仓库
+lee-devkit pod-push --set-default-repo MySpecs             # 设置默认 spec 仓库
+
+# 发布选项
+lee-devkit pod-push --no-allow-warnings                    # 禁用 --allow-warnings 选项
+lee-devkit pod-push --no-verbose                           # 禁用 --verbose 选项
+lee-devkit pod-push --no-skip-import-validation            # 禁用 --skip-import-validation 选项
+lee-devkit pod-push --no-use-libraries                     # 禁用 --use-libraries 选项
+lee-devkit pod-push --no-use-modular-headers               # 禁用 --use-modular-headers 选项
+lee-devkit pod-push --extra-args="--swift-version=5.0"     # 添加额外参数
 ```
 
 ## 配置说明

@@ -18,7 +18,7 @@ class Config:
         self.config_dir = Path.home() / '.lee_devkit'
         self.config_file = self.config_dir / 'config.json'
         self.default_config = {
-            'author': 'Dargon',
+            'author': 'DargonLee',
             'email': '2461414445@qq.com',
             'organization': 'Personal',
             'editor': 'code',  # VS Code
@@ -31,6 +31,12 @@ class Config:
                 'template_repo': 'git@github.com:DargonLee/lee-devkit.git',
                 'default_platform': 'iOS',
                 'swift_version': '5.0'
+            },
+            'spec_repos': {
+                'default': 'NBSpecs',
+                'repos': {
+                    'NBSpecs': 'git@git.ninebot.com:iOS/NBSpecs.git'
+                }
             },
             'codegen': {
                 'templates_dir': str(self.config_dir / 'templates'),
@@ -196,3 +202,62 @@ class Config:
             cache_dir.mkdir(parents=True)
         
         return cache_dir
+        
+    # Spec Repository 相关方法
+    
+    def get_spec_repos(self) -> Dict[str, str]:
+        """获取所有配置的 spec 仓库"""
+        return self.get('spec_repos.repos', {})
+    
+    def get_default_spec_repo(self) -> Optional[str]:
+        """获取默认 spec 仓库名称"""
+        return self.get('spec_repos.default')
+    
+    def get_spec_repo_url(self, name: str) -> Optional[str]:
+        """获取指定 spec 仓库的 URL"""
+        repos = self.get_spec_repos()
+        return repos.get(name)
+    
+    def add_spec_repo(self, name: str, url: str) -> bool:
+        """添加 spec 仓库"""
+        # 确保 spec_repos 结构存在
+        if not self.get('spec_repos'):
+            self.set('spec_repos', {})
+        if not self.get('spec_repos.repos'):
+            self.set('spec_repos.repos', {})
+        
+        # 添加仓库
+        repos = self.get_spec_repos()
+        repos[name] = url
+        self.set('spec_repos.repos', repos)
+        
+        # 如果这是第一个仓库，设为默认
+        if len(repos) == 1:
+            self.set('spec_repos.default', name)
+            
+        return True
+    
+    def remove_spec_repo(self, name: str) -> bool:
+        """移除 spec 仓库"""
+        repos = self.get_spec_repos()
+        if name not in repos:
+            return False
+        
+        # 移除仓库
+        del repos[name]
+        self.set('spec_repos.repos', repos)
+        
+        # 如果这是默认仓库，清除默认设置
+        if self.get('spec_repos.default') == name:
+            self.set('spec_repos.default', None)
+            
+        return True
+    
+    def set_default_spec_repo(self, name: str) -> bool:
+        """设置默认 spec 仓库"""
+        repos = self.get_spec_repos()
+        if name not in repos:
+            return False
+        
+        self.set('spec_repos.default', name)
+        return True

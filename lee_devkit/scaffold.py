@@ -11,7 +11,7 @@ from typing import Dict, Any, Optional, List
 from . import __version__
 from .config import Config
 from .utils.logger import setup_logger
-from .commands import cocoapods, git_tools, file_tools, code_gen, project_init
+from .commands import cocoapods, git_tools, file_tools, code_gen, project_init, pod_repo_push
 
 
 class LeeScaffold:
@@ -58,6 +58,13 @@ class LeeScaffold:
             'module': project_init,
             'description': '项目初始化工具',
             'aliases': ['new', 'create']
+        }
+        
+        # 注册 Pod Repo Push 工具
+        self.commands['pod-push'] = {
+            'module': pod_repo_push,
+            'description': 'CocoaPods 库发布工具',
+            'aliases': ['push', 'pp']
         }
     
     def create_parser(self) -> argparse.ArgumentParser:
