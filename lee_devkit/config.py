@@ -15,7 +15,9 @@ class Config:
     """配置管理类"""
     
     def __init__(self):
-        self.config_dir = Path.home() / '.lee_devkit'
+        # 使用 .config/lee_devkit 作为配置目录
+        self.config_base_dir = Path.home() / '.config'
+        self.config_dir = self.config_base_dir / 'lee_devkit'
         self.config_file = self.config_dir / 'config.json'
         self.default_config = {
             'author': 'DargonLee',
@@ -48,8 +50,18 @@ class Config:
     
     def _load_config(self) -> Dict[str, Any]:
         """加载配置"""
+        # 检查 .config 目录是否存在，不存在则创建
+        if not self.config_base_dir.exists():
+            print(f"创建配置基础目录: {self.config_base_dir}")
+            self.config_base_dir.mkdir(parents=True, exist_ok=True)
+        
+        # 检查 lee_devkit 目录是否存在，不存在则创建
         if not self.config_dir.exists():
-            self.config_dir.mkdir(parents=True)
+            print(f"创建工具配置目录: {self.config_dir}")
+            self.config_dir.mkdir(parents=True, exist_ok=True)
+            
+        # 检查并设置模板目录
+        self._setup_template_directory()
         
         if not self.config_file.exists():
             self._save_config(self.default_config)
@@ -261,3 +273,98 @@ class Config:
         
         self.set('spec_repos.default', name)
         return True
+    
+    def _setup_template_directory(self):
+        """设置模板目录"""
+        template_dir = self.config_dir / "template"
+        
+        # 如果模板目录已存在，则跳过
+        if template_dir.exists() and (template_dir / "NBTemplateModule").exists():
+            return
+        
+        print(f"🔧 正在设置模板目录: {template_dir}")
+        
+        # 检查当前目录是否有模板（用于开发环境）
+        import os
+        current_dir = Path(os.getcwd())
+        local_template = None
+        
+        # 检查多个可能的模板位置
+        possible_locations = [
+            current_dir / "template",
+            current_dir.parent / "template",  # 如果在子目录中运行
+            Path(__file__).parent.parent / "template",  # 相对于当前文件
+        ]
+        
+        for location in possible_locations:
+            if location.exists() and (location / "NBTemplateModule").exists():
+                local_template = location
+                break
+        
+        if local_template:
+            print(f"📂 使用本地模板: {local_template}")
+            try:
+                # 确保目标目录存在
+                template_dir.mkdir(parents=True, exist_ok=True)
+                
+                # 使用系统命令复制，更可靠
+                if os.name == 'posix':  # Unix/Linux/Mac
+                    os.system(f"cp -r '{local_template}'/* '{template_dir}'/")
+                elif os.name == 'nt':  # Windows
+                    os.system(f'xcopy "{local_template}" "{template_dir}" /E /I /Y')
+                    
+                print(f"✅ 模板设置完成: {template_dir}")
+                return
+            except Exception as e:
+                print(f"⚠️ 复制本地模板失败: {e}")
+        
+        # 如果没有本地模板，尝试从远程获取
+        self._download_template_from_remote(template_dir)
+    
+    def _download_template_from_remote(self, template_dir: Path):
+        """从远程仓库下载模板"""
+        import tempfile
+        import subprocess
+        import shutil
+        
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                tmp_path = Path(tmpdir)
+                
+                # 克隆仓库
+                print("📥 正在从远程获取模板...")
+                result = subprocess.run(
+                    ["git", "clone", "--depth", "1", "git@github.com:DargonLee/lee-devkit.git", str(tmp_path)],
+                    capture_output=True,
+                    text=True
+                )
+                
+                if result.returncode != 0:
+                    print(f"⚠️ 无法克隆仓库: {result.stderr}")
+                    print("首次使用时将自动下载模板")
+                    return
+                
+                # 检查模板目录是否存在
+                src_template = tmp_path / "template"
+                
+                if src_template.exists() and (src_template / "NBTemplateModule").exists():
+                    print(f"找到模板目录: {src_template}")
+                else:
+                    print("⚠️ 仓库中未找到模板目录")
+                    return
+                
+                # 复制模板
+                template_dir.mkdir(parents=True, exist_ok=True)
+                
+                # 使用系统命令复制
+                import os
+                if os.name == 'posix':  # Unix/Linux/Mac
+                    os.system(f"cp -r '{src_template}'/* '{template_dir}'/")
+                elif os.name == 'nt':  # Windows
+                    os.system(f'xcopy "{src_template}" "{template_dir}" /E /I /Y')
+                
+                print(f"✅ 模板设置完成: {template_dir}")
+                
+        except Exception as e:
+            print(f"⚠️ 设置模板目录时出错: {e}")
+            print("首次使用时将自动下载模板")

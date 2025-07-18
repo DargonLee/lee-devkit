@@ -14,7 +14,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 def setup_template_directory():
     """设置模板目录"""
     # 配置目录路径
-    config_dir = Path.home() / ".lee_devkit"
+    config_base = Path.home / ".config"
+    config_dir = config_base / "lee_devkit"
     template_dir = config_dir / "template"
     
     # 创建配置目录

@@ -164,7 +164,7 @@ lee-devkit --version
 
 ## ⚙️ 配置文件
 
-工具会在 `~/.lee_devkit/config.json` 中保存配置信息：
+工具会在 `~/.config/lee_devkit/config.json` 中保存配置信息：
 
 ```json
 {
@@ -238,13 +238,12 @@ pip install -e .
 ```bash
 # 如果使用开发模式安装，卸载
 pip uninstall -y lee-devkit
+# 删除配置文件和模板
+rm -rf ~/.config/lee_devkit
 
-# 删除虚拟环境
+# 删除虚拟环境（可选）
 deactivate  # 如果当前在虚拟环境中
 rm -rf venv
-
-# 删除配置文件和模板（可选）
-rm -rf ~/.lee_devkit
 ```
 
 ### 运行测试

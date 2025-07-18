@@ -124,8 +124,15 @@ print_info "正在安装 lee-devkit..."
 pipx install --force git+ssh://git@github.com:DargonLee/lee-devkit.git
 
 # 安装后脚本会自动设置模板目录，但我们在这里也进行检查
-CONFIG_DIR="$HOME/.lee_devkit"
+CONFIG_BASE_DIR="$HOME/.config"
+CONFIG_DIR="$CONFIG_BASE_DIR/lee_devkit"
 TEMPLATE_DIR="$CONFIG_DIR/template"
+
+# 确保 .config 目录存在
+if [ ! -d "$CONFIG_BASE_DIR" ]; then
+    print_info "创建配置基础目录: $CONFIG_BASE_DIR"
+    mkdir -p "$CONFIG_BASE_DIR"
+fi
 
 print_info "检查模板目录..."
 if [ ! -d "$TEMPLATE_DIR" ]; then
@@ -133,20 +140,37 @@ if [ ! -d "$TEMPLATE_DIR" ]; then
     # 创建配置目录和模板目录
     mkdir -p "$CONFIG_DIR"
     
-    # 克隆仓库以获取模板
-    print_info "正在获取模板..."
-    TMP_DIR=$(mktemp -d)
-    if git clone --depth 1 git@github.com:DargonLee/lee-devkit.git "$TMP_DIR"; then
-        if [ -d "$TMP_DIR/template" ]; then
-            mkdir -p "$TEMPLATE_DIR"
-            cp -r "$TMP_DIR/template/." "$TEMPLATE_DIR"
-            print_success "模板设置完成"
-        else
-            print_warning "仓库中未找到模板目录，首次使用时将自动下载"
-        fi
-        rm -rf "$TMP_DIR"
+    # 检查当前目录是否有模板
+    if [ -d "./template" ] && [ -d "./template/NBTemplateModule" ]; then
+        print_info "使用当前目录的模板"
+        mkdir -p "$TEMPLATE_DIR"
+        cp -r ./template/* "$TEMPLATE_DIR/"
+        print_success "模板设置完成"
     else
-        print_warning "无法获取模板，首次使用时将自动下载"
+        # 从远程获取模板
+        print_info "正在获取模板..."
+        TMP_DIR=$(mktemp -d)
+        if git clone --depth 1 git@github.com:DargonLee/lee-devkit.git "$TMP_DIR"; then
+            # 检查模板位置
+            if [ -d "$TMP_DIR/template" ] && [ -d "$TMP_DIR/template/NBTemplateModule" ]; then
+                # 模板在 template 子目录
+                print_info "找到模板目录: $TMP_DIR/template"
+                mkdir -p "$TEMPLATE_DIR"
+                cp -r "$TMP_DIR/template/." "$TEMPLATE_DIR"
+                print_success "模板设置完成"
+            elif [ -d "$TMP_DIR/NBTemplateModule" ]; then
+                # 模板在根目录
+                print_info "模板在仓库根目录"
+                mkdir -p "$TEMPLATE_DIR"
+                cp -r "$TMP_DIR/." "$TEMPLATE_DIR"
+                print_success "模板设置完成"
+            else
+                print_warning "仓库中未找到模板目录，首次使用时将自动下载"
+            fi
+            rm -rf "$TMP_DIR"
+        else
+            print_warning "无法获取模板，首次使用时将自动下载"
+        fi
     fi
 else
     print_success "模板目录已存在"
