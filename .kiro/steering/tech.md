@@ -13,7 +13,7 @@
 The project uses Python's setuptools for packaging and distribution.
 
 ## Installation Methods
-1. **pipx** (recommended): `pipx install git@github.com:DargonLee/lee-devkit.git`
+1. **pipx** (recommended): `pipx install git+https://github.com/DargonLee/lee-devkit.git`
 2. **Source installation**: Clone repo and run `pip3 install -e .`
 3. **Install script**: Run `curl -fsSL https://github.com/DargonLee/lee-devkit/blob/main/install.sh | bash`
 
@@ -23,7 +23,7 @@ The project uses Python's setuptools for packaging and distribution.
 ```bash
 # Install with pipx
 brew install pipx
-pipx install git@github.com:DargonLee/lee-devkit.git
+pipx install git+https://github.com/DargonLee/lee-devkit.git
 
 # Install from source
 git clone https://github.com/DargonLee/lee-devkit.git
@@ -34,7 +34,7 @@ pip3 install -e .
 ### Development Environment Setup
 ```bash
 # Clone repository
-git clone git@github.com:DargonLee/lee-devkit.git
+git clone https://github.com/DargonLee/lee-devkit.git
 cd lee-devkit
 
 # Create virtual environment

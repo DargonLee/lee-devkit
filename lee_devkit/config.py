@@ -30,7 +30,7 @@ class Config:
                 'commit_template': 'feat: {message}'
             },
             'cocoapods': {
-                'template_repo': 'git@github.com:DargonLee/lee-devkit.git',
+                'template_repo': 'https://github.com/DargonLee/lee-devkit.git',
                 'default_platform': 'iOS',
                 'swift_version': '5.0'
             },
@@ -334,7 +334,7 @@ class Config:
                 # 克隆仓库
                 print("📥 正在从远程获取模板...")
                 result = subprocess.run(
-                    ["git", "clone", "--depth", "1", "git@github.com:DargonLee/lee-devkit.git", str(tmp_path)],
+                    ["git", "clone", "--depth", "1", "https://github.com/DargonLee/lee-devkit.git", str(tmp_path)],
                     capture_output=True,
                     text=True
                 )

@@ -121,7 +121,7 @@ fi
 
 # 执行安装
 print_info "正在安装 lee-devkit..."
-pipx install --force git+ssh://git@github.com:DargonLee/lee-devkit.git
+pipx install --force git+https://github.com/DargonLee/lee-devkit.git
 
 # 安装后脚本会自动设置模板目录，但我们在这里也进行检查
 CONFIG_BASE_DIR="$HOME/.config"
@@ -150,7 +150,7 @@ if [ ! -d "$TEMPLATE_DIR" ]; then
         # 从远程获取模板
         print_info "正在获取模板..."
         TMP_DIR=$(mktemp -d)
-        if git clone --depth 1 git@github.com:DargonLee/lee-devkit.git "$TMP_DIR"; then
+        if git clone --depth 1 https://github.com/DargonLee/lee-devkit.git "$TMP_DIR"; then
             # 检查模板位置
             if [ -d "$TMP_DIR/template" ] && [ -d "$TMP_DIR/template/NBTemplateModule" ]; then
                 # 模板在 template 子目录
@@ -197,6 +197,6 @@ else
     print_info "可能的解决方案:"
     echo "1. 确保 ~/.local/bin 在 PATH 中"
     echo "2. 重新加载 shell 配置: source ~/.bash_profile 或 source ~/.zshrc"
-    echo "3. 尝试手动安装: pip3 install --user git+ssh://git@github.com:DargonLee/lee-devkit.git"
+    echo "3. 尝试手动安装: pip3 install --user git+https://github.com/DargonLee/lee-devkit.git"
     exit 1
 fi

@@ -60,7 +60,7 @@ pipx ensurepath
 ### 方式一：使用 pipx 安装（推荐）
 
 ```bash
-pipx install git@github.com:DargonLee/lee-devkit.git
+pipx install --force git+https://github.com/DargonLee/lee-devkit.git
 ```
 
 ### 方式二：从源码安装
@@ -179,7 +179,7 @@ lee-devkit --version
     "commit_template": "feat: {message}"
   },
   "cocoapods": {
-    "template_repo": "git@github.com:DargonLee/lee-devkit.git",
+    "template_repo": "https://github.com/DargonLee/lee-devkit.git",
     "default_platform": "iOS",
     "swift_version": "5.0"
   },
@@ -219,7 +219,7 @@ template/
 
 ```bash
 # 克隆仓库
-git clone git@github.com:DargonLee/lee-devkit.git
+git clone https://github.com/DargonLee/lee-devkit.git
 cd lee-devkit
 
 # 创建并激活虚拟环境
