@@ -1,0 +1,2 @@
+include lee_devkit/post_install.py
+recursive-include template *

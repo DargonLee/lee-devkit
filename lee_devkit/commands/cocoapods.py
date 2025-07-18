@@ -245,13 +245,39 @@ class CocoaPodsScaffold:
         """创建新项目"""
         import tempfile
         
-        # 检查模板
-        if not self.clone_or_update_template(force_update):
-            return False
-        
+        # 首先检查模板目录是否存在
         template_dir = self.templates_dir / self.template_name
+        
+        # 如果模板目录不存在或强制更新，尝试获取模板
+        if not template_dir.exists() or force_update:
+            print("🔍 模板不存在或需要更新，正在获取模板...")
+            if not self.clone_or_update_template(force_update):
+                # 尝试使用当前目录的模板
+                local_template_path = Path.cwd() / "template" / self.template_name
+                if local_template_path.exists():
+                    print("🔍 尝试使用当前目录的模板...")
+                    # 确保目标目录存在
+                    self.templates_dir.mkdir(parents=True, exist_ok=True)
+                    template_dir.parent.mkdir(parents=True, exist_ok=True)
+                    
+                    # 复制本地模板
+                    success = self.run_command([
+                        "cp", "-r", str(local_template_path.parent), str(self.templates_dir.parent)
+                    ])
+                    if not success:
+                        print("❌ 无法复制本地模板")
+                        print("请确保已配置模板仓库或当前目录包含有效模板")
+                        return False
+                    print("✅ 已使用当前目录的模板")
+                else:
+                    print("❌ 无法获取模板")
+                    print("请运行 `lee-devkit config --template-repo \"your-repo-url\"` 配置模板仓库")
+                    return False
+        
+        # 再次检查模板目录是否存在（可能已通过上面的步骤创建）
         if not template_dir.exists():
             print(f"❌ 模板目录不存在: {template_dir}")
+            print("请确保模板仓库包含 template/NBTemplateModule 目录")
             return False
         
         # 确保输出目录存在
