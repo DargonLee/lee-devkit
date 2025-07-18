@@ -16,41 +16,20 @@ __version__ = "1.0.0"
 class CocoaPodsScaffold:
     def __init__(self):
         self.template_name = "NBTemplateModule"
-        self.config_dir = Path.home() / ".lee_devkit"
-        self.config_file = self.config_dir / "config.json"
-        self.templates_dir = self.config_dir / "template"
-        
-        # 默认配置
-        self.default_config = {
-            "template_repo": "git@github.com:DargonLee/lee-devkit.git",
-            "author": "Dargon",
-            "email": "2461414445@qq.com",
-            "organization": "none",
-            "prefix": "YC"
-        }
-        
-        self.setup_config()
-    
-    def setup_config(self):
-        """初始化配置目录和文件"""
-        if not self.config_dir.exists():
-            self.config_dir.mkdir(parents=True)
-            
-        if not self.config_file.exists():
-            self.save_config(self.default_config)
+        # 使用统一的配置管理
+        from ..config import Config
+        self.config_manager = Config()
+        self.templates_dir = self.config_manager.config_dir / "template"
+
     
     def load_config(self) -> Dict:
         """加载配置"""
-        try:
-            with open(self.config_file, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except:
-            return self.default_config
+        return self.config_manager.config_data
     
     def save_config(self, config: Dict):
         """保存配置"""
-        with open(self.config_file, 'w', encoding='utf-8') as f:
-            json.dump(config, f, indent=2, ensure_ascii=False)
+        for key, value in config.items():
+            self.config_manager.set(key, value)
     
     def run_command(self, command: List[str], cwd: Optional[str] = None) -> bool:
         """执行命令"""
@@ -71,8 +50,7 @@ class CocoaPodsScaffold:
     def clone_or_update_template(self, force_update: bool = False) -> bool:
         """克隆或更新模板，只保留 template 文件夹内容"""
         import tempfile
-        config = self.load_config()
-        repo_url = config.get("template_repo")
+        repo_url = self.config_manager.get('cocoapods.template_repo')
         
         if not repo_url:
             print(f"❌ 未配置模板仓库 URL，请先运行 `configure` 命令设置")    
@@ -215,16 +193,17 @@ class CocoaPodsScaffold:
     
     def update_podspec_metadata(self, podspec_path: Path, module_name: str):
         """更新 podspec 元数据"""
-        config = self.load_config()
-        
         try:
             with open(podspec_path, 'r', encoding='utf-8') as f:
                 content = f.read()
             
             # 更新基本信息
+            author = self.config_manager.get('author', 'Unknown')
+            email = self.config_manager.get('email', 'unknown@example.com')
+            
             replacements = {
-                r"s\.author\s*=\s*['\"].*?['\"]": f"s.author = '{config.get('author', 'Unknown')}'",
-                r"s\.email\s*=\s*['\"].*?['\"]": f"s.email = '{config.get('email', 'unknown@example.com')}'",
+                r"s\.author\s*=\s*['\"].*?['\"]": f"s.author = '{author}'",
+                r"s\.email\s*=\s*['\"].*?['\"]": f"s.email = '{email}'",
                 r"s\.summary\s*=\s*['\"].*?['\"]": f"s.summary = 'A brief description of {module_name}'",
                 r"s\.description\s*=\s*['\"].*?['\"]": f"s.description = 'A longer description of {module_name} library'",
             }
@@ -368,32 +347,22 @@ class CocoaPodsScaffold:
     
     def configure(self, **kwargs):
         """配置工具"""
-        config = self.load_config()
-        
         for key, value in kwargs.items():
             if value is not None:
-                config[key] = value
+                self.config_manager.set(key, value)
         
-        self.save_config(config)
         print("✅ 配置已保存")
-        
-        print("\n📋 当前配置:")
-        for key, value in config.items():
-            print(f"  {key}: {value}")
+        self.config_manager.show()
     
     def show_config(self):
         """显示当前配置"""
-        config = self.load_config()
-        print("📋 当前配置:")
-        for key, value in config.items():
-            print(f"  {key}: {value}")
+        self.config_manager.show()
     
     def list_templates(self):
         """列出可用模板"""
-        templates_path = self.templates_dir / "template"
-        if templates_path.exists():
+        if self.templates_dir.exists():
             print("📦 可用模板:")
-            for item in templates_path.iterdir():
+            for item in self.templates_dir.iterdir():
                 if item.is_dir():
                     print(f"  - {item.name}")
         else:

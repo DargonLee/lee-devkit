@@ -60,7 +60,7 @@ pipx ensurepath
 ### 方式一：使用 pipx 安装（推荐）
 
 ```bash
-pipx install git+ssh://git@github.com:DargonLee/lee-devkit.git
+pipx install git@github.com:DargonLee/lee-devkit.git
 ```
 
 ### 方式二：从源码安装
@@ -254,6 +254,8 @@ python -m unittest discover
 
 # 运行特定测试
 python -m unittest tests.test_pod_repo_push
+
+
 ```
 
 ## 📄 许可证
