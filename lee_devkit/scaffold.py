@@ -11,7 +11,7 @@ from typing import Dict, Any, Optional, List
 from . import __version__
 from .config import Config
 from .utils.logger import setup_logger
-from .commands import cocoapods, git_tools, file_tools, code_gen, project_init, pod_repo_push
+from .commands import cocoapods, git_tools, file_tools, code_gen, project_init, pod_repo_push, git_tag
 
 
 class LeeScaffold:
@@ -37,6 +37,13 @@ class LeeScaffold:
             'module': git_tools,
             'description': 'Git 操作工具',
             'aliases': ['g']
+        }
+
+        # 注册 Git Tag 命令
+        self.commands['tag'] = {
+            'module': git_tag,
+            'description': 'Git Tag 管理',
+            'aliases': ['gt']
         }
         
         # 注册文件工具
@@ -174,6 +181,10 @@ class LeeScaffold:
   # Git 工具
   lee-devkit git clone-batch repos.txt
   lee-devkit git status-all ~/Projects
+
+  # Git Tag 管理
+  lee-devkit tag retag 1.2.8
+  lee-devkit tag retag 1.2.8 --message "Release version 1.2.8"
   
   # 文件工具
   lee-devkit file rename-batch --pattern "*.jpg"

@@ -10,8 +10,9 @@
 
 ## ✨ 特性
 
-- � **快支速创建 CocoaPods 库项目** - 基于模板快速搭建库结构
+- 🚀 **快速创建 CocoaPods 库项目** - 基于模板快速搭建库结构
 - 📦 **基于 Git 模板仓库** - 使用标准化的 Git 模板
+- 🏷️ **Git Tag 管理** - 删除并重新创建 Git tag，支持本地和远程同步
 - ⚙️ **可配置的作者信息和组织信息** - 自定义库的元数据
 - 🎯 **Example 项目支持** - 可选择是否包含示例项目
 - 🔧 **支持自定义输出目录** - 指定生成库的位置
@@ -76,7 +77,7 @@ curl -fsSL https://github.com/DargonLee/lee-devkit/blob/main/install.sh | bash
 pipx uninstall lee-devkit
 
 # 删除配置文件和模板
-rm -rf ~/.lee_devkit
+rm -rf ~/.config/lee_devkit
 ```
 
 ## 🚀 使用方法
