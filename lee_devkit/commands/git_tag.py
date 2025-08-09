@@ -16,6 +16,7 @@ from ..utils.logger import setup_logger
 def register_arguments(parser: argparse.ArgumentParser):
     """注册命令参数"""
     subparsers = parser.add_subparsers(dest='tag_action', help='Tag 操作')
+    
     # create 子命令
     create_parser = subparsers.add_parser(
         'create',
@@ -55,6 +56,7 @@ def register_arguments(parser: argparse.ArgumentParser):
         action='store_true',
         help='只创建本地 tag，不推送到远程'
     )
+    
     # retag 子命令
     retag_parser = subparsers.add_parser(
         'retag',
@@ -100,11 +102,50 @@ def execute(args: argparse.Namespace, config: Config) -> bool:
     """执行命令"""
     logger = setup_logger()
     
-    if not hasattr(args, 'tag_action') or args.tag_action != 'retag':
-        logger.error("请指定 retag 操作")
+    if not hasattr(args, 'tag_action'):
+        logger.error("请指定操作类型 (create 或 retag)")
         return False
     
-    return _handle_retag(args, config, logger)
+    if args.tag_action == 'create':
+        return _handle_create(args, config, logger)
+    elif args.tag_action == 'retag':
+        return _handle_retag(args, config, logger)
+    else:
+        logger.error(f"未知操作: {args.tag_action}")
+        return False
+
+
+def _handle_create(args: argparse.Namespace, config: Config, logger) -> bool:
+    """处理 create 命令"""
+    tag_name = args.tag_name
+    remote = args.remote
+    commit = args.commit or 'HEAD'
+    
+    # 检查是否在 Git 仓库中
+    if not _is_git_repo():
+        logger.error("❌ 当前目录不是 Git 仓库")
+        return False
+    
+    logger.info(f"🏷️  开始创建 tag: {tag_name}")
+    
+    # 步骤1: 创建 tag
+    if not _create_tag(tag_name, commit, args.message, logger, args.dry_run):
+        return False
+    
+    # 步骤2: 推送 tag 到远程（如果不是 --no-push）
+    if not args.no_push:
+        if not _push_tags(remote, logger, args.dry_run):
+            return False
+    
+    if not args.dry_run:
+        if args.no_push:
+            logger.info(f"✅ 成功创建本地 tag: {tag_name}")
+        else:
+            logger.info(f"✅ 成功创建并推送 tag: {tag_name}")
+    else:
+        logger.info("🔍 干运行模式完成")
+    
+    return True
 
 
 def _handle_retag(args: argparse.Namespace, config: Config, logger) -> bool:
