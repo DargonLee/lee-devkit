@@ -34,6 +34,9 @@
     - [创建库](#创建库)
     - [配置工具](#配置工具)
     - [发布库](#发布库)
+    - [Git Tag 管理 ✅](#git-tag-管理-)
+      - [创建 Tag](#创建-tag)
+      - [重新创建 Tag](#重新创建-tag)
     - [其他命令](#其他命令)
   - [⚙️ 配置文件](#️-配置文件)
   - [📝 模板要求](#-模板要求)
@@ -145,6 +148,55 @@ lee-devkit pod-push --no-skip-import-validation            # 禁用 --skip-impor
 lee-devkit pod-push --no-use-libraries                     # 禁用 --use-libraries 选项
 lee-devkit pod-push --no-use-modular-headers               # 禁用 --use-modular-headers 选项
 lee-devkit pod-push --extra-args="--swift-version=5.0"     # 添加额外参数
+```
+
+### Git Tag 管理 ✅
+
+#### 创建 Tag
+
+```bash
+# 创建并推送 tag（基本用法）
+lee-devkit tag create 1.2.8
+
+# 创建带注释的 tag
+lee-devkit tag create 1.2.8 --message "Release version 1.2.8"
+
+# 指定 commit 或分支
+lee-devkit tag create 1.2.8 --commit abc1234
+
+# 只创建本地 tag，不推送
+lee-devkit tag create 1.2.8 --no-push
+
+# 指定远程仓库名称
+lee-devkit tag create 1.2.8 --remote upstream
+
+# 预览将要执行的命令（不实际执行）
+lee-devkit tag create 1.2.8 --dry-run
+```
+
+#### 重新创建 Tag
+
+```bash
+# 删除并重新创建 tag（基本用法）
+lee-devkit tag retag 1.2.8
+
+# 创建带注释的 tag
+lee-devkit tag retag 1.2.8 --message "Release version 1.2.8"
+
+# 指定 commit 或分支
+lee-devkit tag retag 1.2.8 --commit abc1234
+
+# 指定远程仓库名称
+lee-devkit tag retag 1.2.8 --remote upstream
+
+# 预览将要执行的命令（不实际执行）
+lee-devkit tag retag 1.2.8 --dry-run
+
+# 强制执行（即使 tag 不存在也继续）
+lee-devkit tag retag 1.2.8 --force
+
+# 组合使用多个参数
+lee-devkit tag retag 1.2.8 --message "Release version 1.2.8" --commit main --remote origin
 ```
 
 ### 其他命令

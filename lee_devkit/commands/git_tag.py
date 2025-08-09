@@ -16,7 +16,45 @@ from ..utils.logger import setup_logger
 def register_arguments(parser: argparse.ArgumentParser):
     """注册命令参数"""
     subparsers = parser.add_subparsers(dest='tag_action', help='Tag 操作')
+    # create 子命令
+    create_parser = subparsers.add_parser(
+        'create',
+        help='创建并推送 Git tag',
+        description='创建新的 Git tag 并推送到远程仓库'
+    )
     
+    create_parser.add_argument(
+        'tag_name',
+        help='要创建的 tag 名称'
+    )
+    
+    create_parser.add_argument(
+        '--commit',
+        help='指定 commit hash 或分支名（默认为当前 HEAD）'
+    )
+    
+    create_parser.add_argument(
+        '--message', '-m',
+        help='tag 消息（创建带注释的 tag）'
+    )
+    
+    create_parser.add_argument(
+        '--remote',
+        default='origin',
+        help='远程仓库名称（默认: origin）'
+    )
+    
+    create_parser.add_argument(
+        '--dry-run',
+        action='store_true',
+        help='仅显示将要执行的命令，不实际执行'
+    )
+    
+    create_parser.add_argument(
+        '--no-push',
+        action='store_true',
+        help='只创建本地 tag，不推送到远程'
+    )
     # retag 子命令
     retag_parser = subparsers.add_parser(
         'retag',

@@ -183,6 +183,8 @@ class LeeScaffold:
   lee-devkit git status-all ~/Projects
 
   # Git Tag 管理
+  lee-devkit tag create 1.2.8
+  lee-devkit tag create 1.2.8 --message "Release version 1.2.8"
   lee-devkit tag retag 1.2.8
   lee-devkit tag retag 1.2.8 --message "Release version 1.2.8"
   
