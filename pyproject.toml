@@ -21,7 +21,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: MacOS",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
+
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -31,10 +31,8 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
     "Topic :: Utilities",
 ]
-requires-python = ">=3.7"
-dependencies = [
-    "argparse; python_version<'3.2'",
-]
+requires-python = ">=3.8"
+dependencies = []
 
 [project.urls]
 Homepage = "https://github.com/DargonLee/lee-devkit"
@@ -66,7 +64,7 @@ lee_devkit = ["py.typed"]
 
 [tool.black]
 line-length = 88
-target-version = ['py37']
+target-version = ['py38']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -89,7 +87,7 @@ line_length = 88
 known_first_party = ["lee_devkit"]
 
 [tool.mypy]
-python_version = "3.7"
+python_version = "3.8"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

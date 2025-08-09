@@ -4,7 +4,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/平台-macOS-blue" alt="平台">
-  <img src="https://img.shields.io/badge/python-3.7%2B-blue" alt="Python">
+  <img src="https://img.shields.io/badge/python-3.8%2B-blue" alt="Python">
   <img src="https://img.shields.io/badge/许可证-MIT-green" alt="许可证">
 </p>
 
@@ -74,7 +74,7 @@
 ### 系统要求
 
 - **操作系统**: macOS 10.14 或更高版本
-- **Python**: 3.7 或更高版本
+- **Python**: 3.8 或更高版本
 - **Git**: 用于模板管理和版本控制
 - **CocoaPods**: 用于 iOS 开发（可选，但推荐）
 
@@ -99,7 +99,7 @@ source ~/.zshrc  # 或 source ~/.bash_profile
 
 ```bash
 # 检查 Python 版本
-python3 --version  # 应该是 3.7 或更高
+python3 --version  # 应该是 3.8 或更高
 
 # 检查 Git
 git --version

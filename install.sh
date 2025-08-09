@@ -46,15 +46,15 @@ print_info "检查系统依赖..."
 # 检查 Python 3
 if ! command -v python3 &> /dev/null; then
     print_error "错误: 未找到 Python 3"
-    print_info "请安装 Python 3.7 或更高版本: brew install python"
+    print_info "请安装 Python 3.8 或更高版本: brew install python"
     exit 1
 fi
 
 # 检查 Python 版本
 PYTHON_VERSION=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
-if (( $(echo "$PYTHON_VERSION < 3.7" | bc -l) )); then
+if (( $(echo "$PYTHON_VERSION < 3.8" | bc -l) )); then
     print_error "错误: Python 版本过低 ($PYTHON_VERSION)"
-    print_info "请安装 Python 3.7 或更高版本: brew install python"
+    print_info "请安装 Python 3.8 或更高版本: brew install python"
     exit 1
 fi
 
