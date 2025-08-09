@@ -1,7 +1,7 @@
 # Technology Stack
 
 ## Core Technologies
-- **Python**: Main implementation language (3.8+)
+- **Python**: Main implementation language (3.9+)
 - **CocoaPods**: iOS dependency management system that this tool helps create libraries for
 - **Git**: Used for template repository management and version control
 
