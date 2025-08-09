@@ -205,3 +205,17 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Lee DevKit 特定文件
+tmp/
+.DS_Store
+*.orig
+*~
+
+# 用户配置和模板缓存（通常不应该提交）
+.lee_devkit/
+.config/lee_devkit/
+
+# 测试生成的文件
+test_output/
+TestLib*/

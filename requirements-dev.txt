@@ -1,0 +1,22 @@
+# Lee DevKit 开发依赖
+-r requirements.txt
+
+# 测试框架
+pytest>=6.0.0
+pytest-cov>=2.10.0
+
+# 代码格式化和检查
+black>=21.0.0
+flake8>=3.8.0
+isort>=5.0.0
+
+# 类型检查
+mypy>=0.800
+
+# 文档生成
+sphinx>=4.0.0
+sphinx-rtd-theme>=0.5.0
+
+# 构建工具
+build>=0.7.0
+twine>=3.4.0

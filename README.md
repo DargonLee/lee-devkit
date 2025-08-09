@@ -302,13 +302,30 @@ rm -rf venv
 ### 运行测试
 
 ```bash
-# 运行所有测试
-python -m unittest discover
+# 使用 Makefile（推荐）
+make test
+
+# 或者直接使用 pytest
+python -m pytest tests/ -v
 
 # 运行特定测试
 python -m unittest tests.test_pod_repo_push
 
+# 生成覆盖率报告
+make test  # 会自动生成 htmlcov/ 目录
+```
 
+### 代码质量
+
+```bash
+# 代码格式化
+make format
+
+# 代码检查
+make lint
+
+# 类型检查
+mypy lee_devkit
 ```
 
 ## 📄 许可证

@@ -1,2 +1,31 @@
-include lee_devkit/post_install.py
+# 包含额外文件到分发包中
+include README.md
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTING.md
+include requirements.txt
+include requirements-dev.txt
+include Makefile
+include pyproject.toml
+
+# 包含模板文件
 recursive-include template *
+
+# 包含类型提示文件
+include lee_devkit/py.typed
+
+# 排除不需要的文件
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.orig
+global-exclude *~
+global-exclude __pycache__
+global-exclude .DS_Store
+prune .git
+prune .github
+prune tests
+prune tmp
+prune venv
+prune htmlcov
+prune .pytest_cache
+prune .mypy_cache
